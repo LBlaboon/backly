@@ -1,0 +1,38 @@
+About backly
+============
+
+backly is a simple rsync-like tool for recursively copying entire directories.
+The intended use case is for making verionless incremental backups; however, it
+can be used to copy the contents of any directory to any other directory,
+provided you have read access to the source and write access to the
+destination. Like rsync, backly uses a combination of file size and
+modification date to determine if it needs to be copied over.
+
+This program will not work properly if source is a subdirectory
+or destination or vice-versa.
+
+
+Required packages
+=================
+
+backly does not depend on any packages other than what typically ships with any
+Linux distribution.
+
+
+Installation
+============
+
+The usual 'make' and 'make install' is sufficient for compiling and installing
+backly. The default prefix /usr/local, which means the binary will be installed
+to /usr/local/bin. The prefix can be changed by setting it in the install
+command; for example, by running 'make PREFIX=/usr install'.
+
+
+How to report bugs?
+===================
+
+Bugs should be reported to L. Bradley LaBoon <me@bradleylaboon.com>
+
+Please indicate what OS and architecture you are using, as well as output from
+the program showing the bug, if possible (hint: run backly with --test to avoid
+destroying any files that you care about).
