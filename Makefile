@@ -1,4 +1,5 @@
-# Install prefix
+# Install destination and prefix
+DESTDIR ?=
 PREFIX ?= /usr/local
 
 # Build flags
@@ -12,7 +13,7 @@ backly: backly.c Makefile
 	gcc $(FLAGS) -o backly backly.c
 
 install: backly
-	install -m 0755 backly $(PREFIX)/bin
+	install -Dm 0755 backly $(DESTDIR)/$(PREFIX)/bin/backly
 
 clean:
 	rm -f backly
