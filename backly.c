@@ -259,7 +259,7 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 			
 			// Only copy file if it doesn't exist or has changed
 			if (needToCopy == 1) {
-				printf("+ %s 100.00%", itemSrc + srcPrefix);
+				printf("+ %s 100.00%%", itemSrc + srcPrefix);
 				fflush(stdout);
 				if (testMode == 0) {
 					int pid = fork();
@@ -267,7 +267,7 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 						fprintf(stderr, "Could not fork: %s\n", strerror(errno));
 						continue;
 					} else if (pid == 0) {
-						execlp("cp", "cp", "-f --preserve=timestamps", itemSrc, itemDest, (char *) NULL);
+						execlp("cp", "cp", "-f", "--preserve=timestamps", itemSrc, itemDest, (char *) NULL);
 					} else {
 						struct stat srcStat, destStat;
 						double pDone = 0;
