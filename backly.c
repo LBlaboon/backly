@@ -259,7 +259,7 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 			
 			// Only copy file if it doesn't exist or has changed
 			if (needToCopy == 1) {
-				printf("+ %s 100.00%%", itemSrc + srcPrefix);
+				printf("+ %s ", itemSrc + srcPrefix);
 				fflush(stdout);
 				if (testMode == 0) {
 					int pid = fork();
@@ -271,7 +271,7 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 					} else {
 						struct stat srcStat, destStat;
 						double pDone = 0;
-						int numPrinted = 7;
+						int numPrinted = 0;
 						if (stat(itemSrc, &srcStat) != -1) {
 							while (waitpid(pid, NULL, WNOHANG) == 0) {
 								if (stat(itemDest, &destStat) == -1)
@@ -285,6 +285,10 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 								fflush(stdout);
 							}
 						}
+						for (int i = 0; i < numPrinted; i++)
+							printf("\b \b");
+						printf("100.00%%");
+						fflush(stdout);
 					}
 				}
 				printf("\n");
