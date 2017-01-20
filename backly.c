@@ -267,7 +267,7 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 						fprintf(stderr, "Could not fork: %s\n", strerror(errno));
 						continue;
 					} else if (pid == 0) {
-						execlp("cp", "cp", "-f", "--preserve=timestamps", itemSrc, itemDest, (char *) NULL);
+						execlp("cp", "cp", "-f", "-P", "--preserve=timestamps,links", itemSrc, itemDest, (char *) NULL);
 					} else {
 						struct stat srcStat, destStat;
 						double pDone = 0;
