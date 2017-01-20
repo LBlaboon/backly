@@ -37,11 +37,11 @@ void printHelp()
 {
 	printUsage(stdout);
 	printf("Turn destdir into a clone of srcdir.\n\n");
-	
+
 	printf("Options:\n");
 	printf(" --test\tRun in test mode.\n");
 	printf(" --help\tPrint this help and quit.\n\n");
-	
+
 	printf("Report bugs to L. Bradley LaBoon <me@bradleylaboon.com>\n");
 	printf("backly home page: <http://git.bradleylaboon.com/backly.git>\n");
 }
@@ -53,13 +53,13 @@ void removeMissing(char *src, int srcPrefix, char *dest, int destPrefix, int tes
 		srcLen++;
 	while (dest[destLen])
 		destLen++;
-	
+
 	DIR *destDir = opendir(dest);
 	if (destDir == NULL) {
 		fprintf(stderr, "Could not open %s: %s\n", dest, strerror(errno));
 		return;
 	}
-	
+
 	// If the entire directory doesn't exist in src, remove it from dest
 	DIR *srcDir = opendir(src);
 	if (srcDir == NULL) {
@@ -88,24 +88,24 @@ void removeMissing(char *src, int srcPrefix, char *dest, int destPrefix, int tes
 		}
 	}
 	closedir(srcDir);
-	
+
 	// Look at each item in the folder
 	struct dirent *item;
 	while ((item = readdir(destDir)) != NULL) {
 		// Ignore . and .. references
 		if (strcmp(item->d_name, ".") == 0 || strcmp(item->d_name, "..") == 0)
 			continue;
-		
+
 		int itemLen = 0;
 		while (item->d_name[itemLen])
 			itemLen++;
-		
+
 		// +2 because a trailing slash might be added
 		char itemSrc[srcLen + itemLen + 2];
 		char itemDest[destLen + itemLen + 2];
 		sprintf(itemSrc, "%s%s", src, item->d_name);
 		sprintf(itemDest, "%s%s", dest, item->d_name);
-		
+
 		// Test if item is a directory
 		int itemIsDir = 1;
 		DIR *testDir = opendir(itemDest);
@@ -113,7 +113,7 @@ void removeMissing(char *src, int srcPrefix, char *dest, int destPrefix, int tes
 			itemIsDir = 0;
 		else if (testDir != NULL)
 			closedir(testDir);
-		
+
 		if (itemIsDir == 1) {
 			// If it's a directory, append trailing slashes and recurse
 			itemSrc[srcLen + itemLen] = '/';
@@ -150,7 +150,7 @@ void removeMissing(char *src, int srcPrefix, char *dest, int destPrefix, int tes
 			}
 		}
 	}
-	
+
 	closedir(destDir);
 	return;
 }
@@ -162,13 +162,13 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 		srcLen++;
 	while(dest[destLen])
 		destLen++;
-	
+
 	DIR *srcDir = opendir(src);
 	if (srcDir == NULL) {
 		fprintf(stderr, "Could not open %s: %s\n", src, strerror(errno));
 		return;
 	}
-	
+
 	// If the dest directory doesn't exist, create it
 	DIR *destDir = opendir(dest);
 	if (destDir == NULL) {
@@ -195,22 +195,22 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 		}
 	}
 	closedir(destDir);
-	
+
 	// Look at each item in the folder
 	struct dirent *item;
 	while ((item = readdir(srcDir)) != NULL) {
 		if (strcmp(item->d_name, ".") == 0 || strcmp(item->d_name, "..") == 0)
 			continue;
-		
+
 		int itemLen = 0;
 		while (item->d_name[itemLen])
 			itemLen++;
-		
+
 		char itemSrc[srcLen + itemLen + 2];
 		char itemDest[destLen + itemLen + 2];
 		sprintf(itemSrc, "%s%s", src, item->d_name);
 		sprintf(itemDest, "%s%s", dest, item->d_name);
-		
+
 		// Test if item is a directory
 		int itemIsDir = 1;
 		DIR *testDir = opendir(itemSrc);
@@ -218,7 +218,7 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 			itemIsDir = 0;
 		else if (testDir != NULL)
 			closedir(testDir);
-		
+
 		if (itemIsDir == 1) {
 			// If it's a directory, recurse
 			itemSrc[srcLen + itemLen] = '/';
@@ -239,7 +239,7 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 				}
 			} else {
 				fclose(destFile);
-				
+
 				// Check if file size or modified time is different
 				struct stat srcStat, destStat;
 				if (stat(itemSrc, &srcStat) == -1) {
@@ -250,13 +250,13 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 					fprintf(stderr, "Could not stat %s\n", itemDest);
 					continue;
 				}
-				
+
 				if (srcStat.st_size != destStat.st_size)
 					needToCopy = 1;
 				else if (srcStat.st_mtime > destStat.st_mtime)
 					needToCopy = 1;
 			}
-			
+
 			// Only copy file if it doesn't exist or has changed
 			if (needToCopy == 1) {
 				printf("+ %s ", itemSrc + srcPrefix);
@@ -276,9 +276,9 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 							while (waitpid(pid, NULL, WNOHANG) == 0) {
 								if (stat(itemDest, &destStat) == -1)
 									continue;
-								
+
 								pDone = (double)destStat.st_size / (double)srcStat.st_size;
-								
+
 								for (int i = 0; i < numPrinted; i++)
 									printf("\b \b");
 								numPrinted = printf("%.2lf%%", pDone * 100);
@@ -295,7 +295,7 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 			}
 		}
 	}
-	
+
 	closedir(srcDir);
 	return;
 }
@@ -304,7 +304,7 @@ int main(int argc, char **argv)
 {
 	int srcArg = 0, destArg = 0;
 	int testMode = 0;
-	
+
 	// Parse arguments
 	for (int i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--help") == 0) {
@@ -319,33 +319,33 @@ int main(int argc, char **argv)
 			destArg = i;
 		}
 	}
-	
+
 	if (srcArg == 0 || destArg == 0) {
 		printUsage(stderr);
 		fprintf(stderr, "Run 'backly --help' for more information.\n");
 		exit(1);
 	}
-	
+
 	// Determine argument lengths
 	int srcLen = 0, destLen = 0;
 	while (argv[srcArg][srcLen])
 		srcLen++;
 	while (argv[destArg][destLen])
 		destLen++;
-	
+
 	// Add trailing slashes to directory arguments if necessary
 	char srcDir[srcLen + 2], destDir[destLen + 2];
-	
+
 	if (argv[srcArg][srcLen - 1] == '/')
 		sprintf(srcDir, "%s", argv[srcArg]);
 	else
 		sprintf(srcDir, "%s/", argv[srcArg]);
-	
+
 	if (argv[destArg][destLen - 1] == '/')
 		sprintf(destDir, "%s", argv[destArg]);
 	else
 		sprintf(destDir, "%s/", argv[destArg]);
-	
+
 	// Check if directories exist and can be accessed
 	DIR *dir = opendir(srcDir);
 	if (dir == NULL) {
@@ -353,19 +353,19 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 	closedir(dir);
-	
+
 	dir = opendir(destDir);
 	if (dir == NULL) {
 		fprintf(stderr, "Could not open destination: %s\n", strerror(errno));
 		exit(1);
 	}
 	closedir(dir);
-	
+
 	// Remove files from the destination that don't exist in the source
 	removeMissing(srcDir, strlen(srcDir), destDir, strlen(destDir), testMode);
-	
+
 	// Copy new files and overwrite existing files if different
 	copyNew(srcDir, strlen(srcDir), destDir, strlen(destDir), testMode);
-	
+
 	return 0;
 }
