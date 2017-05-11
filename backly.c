@@ -39,8 +39,9 @@ void printHelp()
 	printf("Turn destdir into a clone of srcdir.\n\n");
 
 	printf("Options:\n");
-	printf(" --test\tRun in test mode.\n");
-	printf(" --help\tPrint this help and quit.\n\n");
+	printf(" --test\t\tRun in test mode\n");
+	printf(" --noremove\tDon't remove any files in destdir\n");
+	printf(" --help\t\tPrint this help and quit\n\n");
 
 	printf("Report bugs to L. Bradley LaBoon <me@bradleylaboon.com>\n");
 	printf("backly home page: <http://git.bradleylaboon.com/backly.git>\n");
@@ -303,7 +304,7 @@ void copyNew(char *src, int srcPrefix, char *dest, int destPrefix, int testMode)
 int main(int argc, char **argv)
 {
 	int srcArg = 0, destArg = 0;
-	int testMode = 0;
+	int testMode = 0, remove = 1;
 
 	// Parse arguments
 	for (int i = 1; i < argc; i++) {
@@ -313,6 +314,8 @@ int main(int argc, char **argv)
 		} else if (strcmp(argv[i], "--test") == 0) {
 			testMode = 1;
 			printf("***Operating in test mode.***\n");
+		} else if (strcmp(argv[i], "--noremove") == 0) {
+			remove = 0;
 		} else if (srcArg == 0) {
 			srcArg = i;
 		} else {
@@ -362,7 +365,8 @@ int main(int argc, char **argv)
 	closedir(dir);
 
 	// Remove files from the destination that don't exist in the source
-	removeMissing(srcDir, strlen(srcDir), destDir, strlen(destDir), testMode);
+	if (remove)
+		removeMissing(srcDir, strlen(srcDir), destDir, strlen(destDir), testMode);
 
 	// Copy new files and overwrite existing files if different
 	copyNew(srcDir, strlen(srcDir), destDir, strlen(destDir), testMode);
